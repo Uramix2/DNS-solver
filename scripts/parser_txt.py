@@ -1,0 +1,45 @@
+import dns.resolver
+import re
+
+def parse_txt(domain):
+    """
+    Analyse les enregistrements TXT pour extraire domaines, emails, IPv4 et IPv6.
+    """
+    resolver = dns.resolver.Resolver()
+    
+    # regex patterns pour le domaine, email, IPv4 et IPv6
+    domain_regex = re.compile(r'(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}')
+    email_regex = re.compile(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}')
+
+    ipv4_regex = re.compile(r'\b(?:\d{1,3}\.){3}\d{1,3}\b')
+    ipv6_regex = re.compile(r'(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}')
+
+    found_info_dico = {
+        "domains": [],
+        "emails": [],
+        "ipv4": [],
+        "ipv6": []
+    }
+
+    try:
+        response = resolver.resolve(domain, 'TXT')
+        for record in response:
+            str_e = str(record).replace('"', '')
+
+            found_info_dico["domains"].extend(domain_regex.findall(str_e))
+            found_info_dico["emails"].extend(email_regex.findall(str_e))
+            found_info_dico["ipv4"].extend(ipv4_regex.findall(str_e))
+            found_info_dico["ipv6"].extend(ipv6_regex.findall(str_e))
+    
+
+    except dns.resolver.NoAnswer:
+        return f'No TXT record found for {domain}'
+    
+    except Exception as ex:
+        return f"Error: {ex}"
+            
+    return found_info_dico
+
+
+# -- test --
+#print(parse_txt("oteria.fr"))

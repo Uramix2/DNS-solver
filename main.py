@@ -20,6 +20,7 @@ def main():
             border_style="blue",
             padding=(1, 2),
         ))
+    
     result = dns_type(domain,liste,verbose=args.verbose)
 
     if result:
@@ -27,9 +28,7 @@ def main():
     
     else:
         console.print("[red]domaine invalide[/red]")
-        
-
-        
+            
 
 if __name__ == "__main__":
     main()
