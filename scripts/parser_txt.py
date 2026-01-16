@@ -41,5 +41,20 @@ def parse_txt(domain):
     return found_info_dico
 
 
+
+def parent_domain(domain):
+    """
+    Retourne le domaine parent d'un domaine donné.
+    Exemple : pour "sub.example.com", retourne "example.com".
+    """
+    parts = domain.split('.')
+    if len(parts) < 2:
+        return None  
+    return '.'.join(parts[-2:]) 
+
+
 # -- test --
 #print(parse_txt("oteria.fr"))
+
+#assert parent_domain("sub.example.co.uk") == "co.uk"  
+#assert parent_domain("example.com") == "example.com"

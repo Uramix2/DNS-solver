@@ -12,6 +12,6 @@ def parse_args():
     parser.add_argument("-i","--scan-IP-neighbors", action="store_true", help="Scanne les adresses IP voisines dans un sous-réseau donné")
     parser.add_argument("-e","--subdomain-enum", action="store_true", help="Effectue une énumération des sous-domaines pour un domaine donné")
     parser.add_argument("-d","--max-depth", type=int, default=2, help="Profondeur maximale pour l'analyse récursive des enregistrements TXT (par défaut: 2)")
-    parser.add_argument("-a","--all", action="store_true", help="Exécute toutes les fonctionnalités disponibles")
+    parser.add_argument("-a","--all", action="store_true", help="Exécute toutes les fonctionnalités disponibles sauf brute force")
     parser.add_argument("--tld", action="store_true", help="Récupère les domaines parents")
     return parser.parse_args()
