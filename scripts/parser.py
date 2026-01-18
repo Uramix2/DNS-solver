@@ -15,3 +15,5 @@ def parse_args():
     parser.add_argument("-a","--all", action="store_true", help="Exécute toutes les fonctionnalités disponibles sauf brute force")
     parser.add_argument("--tld", action="store_true", help="Récupère les domaines parents")
     return parser.parse_args()
+
+
