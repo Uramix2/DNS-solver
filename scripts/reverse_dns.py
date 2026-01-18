@@ -6,17 +6,15 @@ def revserse_dns(ip_address):
     Effectue une recherche DNS inversée pour une adresse IP donnée.
     Retourne le nom de domaine associé ou un message d'erreur.
     """
-    liste = []
     try:
-        reverse_name = reversename.from_address(ip_address).to_text().split(" ")[0]
-        liste.append(reverse_name)
+        # string 
+        ip_str = str(ip_address)
+        reverse_name = reversename.from_address(ip_str)
         resolved_name = str(dns.resolver.resolve(reverse_name, "PTR")[0])
-        liste.append(resolved_name)
-        return liste
-    
+        return resolved_name
     
     except Exception as ex:
-        return f"Error with reverse DNS"
+        return f"Error DNS with {ip_address}"
 
 if __name__ == "__main__":
     # -- test --

@@ -1,4 +1,5 @@
 import dns.resolver
+import re
 
 def resolver(domain, record_type):
     """
