@@ -1,5 +1,5 @@
 import ipaddress
-from reverse_dns import revserse_dns 
+from .reverse_dns import revserse_dns 
 
 def ip_neighbors(ip_address, size=2):
     """

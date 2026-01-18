@@ -1,19 +1,25 @@
 import argparse
 
 def parse_args():
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description="DNS Recon Tool")
     
-    parser.add_argument("domain")
-    parser.add_argument("-t","--TXT-parser", action="store_true", help="Analyse récursivement les enregistrements TXT pour extraire des informations supplémentaires")
-    parser.add_argument("-b","--brute-force", action="store_true", help="Effectue une recherche brute force des types DNS pour un domaine donné")
-    parser.add_argument("-v", "--verbose", action="store_true", help="Affiche les erreurs rencontrées lors de la résolution DNS")
-    parser.add_argument("-s","--scan-SRV", action="store_true", help="Scanne les enregistrements SRV pour un domaine donné")
-    parser.add_argument("-r","--reverse-DNS", action="store_true", help="Effectue une recherche DNS inversée pour une adresse IP donnée")
-    parser.add_argument("-i","--scan-IP-neighbors", action="store_true", help="Scanne les adresses IP voisines dans un sous-réseau donné")
-    parser.add_argument("-e","--subdomain-enum", action="store_true", help="Effectue une énumération des sous-domaines pour un domaine donné")
-    parser.add_argument("-d","--max-depth", type=int, default=2, help="Profondeur maximale pour l'analyse récursive des enregistrements TXT (par défaut: 2)")
-    parser.add_argument("-a","--all", action="store_true", help="Exécute toutes les fonctionnalités disponibles sauf brute force")
-    parser.add_argument("--tld", action="store_true", help="Récupère les domaines parents")
-    return parser.parse_args()
+    parser.add_argument("domain", help="Target domain")
+    
+    parser.add_argument("-d", "--max-depth", type=int, default=2, help="Recursion depth (default: 2)")
+    parser.add_argument("-s", "--size", type=int, default=2, dest="ip_neighbors_size", help="IP neighbors range")
+    parser.add_argument("-w", "--wordlist", default="wordlists/liste_subdomains.txt")
 
+    parser.add_argument("-t", "--txt", action="store_true", dest="TXT_parser", help="Parse TXT/SPF")
+    parser.add_argument("-r", "--rev", action="store_true", dest="reverse_DNS", help="Reverse DNS")
+    parser.add_argument("-i", "--neighbors", action="store_true", dest="scan_IP_neighbors", help="IP Neighbors")
+    parser.add_argument("-e", "--enum", action="store_true", dest="subdomain_enum", help="Subdomain enum")
+    parser.add_argument("-srv", "--srv", action="store_true", dest="scan_SRV", help="Scan SRV records")
+    parser.add_argument("-a", "--all", action="store_true", help="Enable all scans")
 
+    args = parser.parse_args()
+
+    if args.all:
+        for funct in ['TXT_parser', 'reverse_DNS', 'scan_IP_neighbors', 'subdomain_enum', 'scan_SRV']:
+            setattr(args, funct, True)
+            
+    return args
