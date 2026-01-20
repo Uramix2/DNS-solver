@@ -1,4 +1,5 @@
 import ipaddress
+
 from .reverse_dns import revserse_dns 
 
 def ip_neighbors(ip_address, size=2):
@@ -9,6 +10,9 @@ def ip_neighbors(ip_address, size=2):
     liste = []
 
     for i in range(-size,size+1):
+        # ici on évite l'IP de base
+        if i == 0:
+            continue 
         try:
             ip_neighbors = ipaddress.ip_address(ip_address) + i # pour avoir les IP voisines
             liste.append(str(revserse_dns(ip_neighbors)))
@@ -19,7 +23,7 @@ def ip_neighbors(ip_address, size=2):
     return liste    
 
 if __name__ == "__main__":
-    # -- test --
+   
     print(ip_neighbors("92.61.160.137",2))
 
 

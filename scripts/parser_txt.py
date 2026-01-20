@@ -53,8 +53,7 @@ def parent_domain(domain):
     return '.'.join(parts[-2:]) 
 
 
-# -- test --
-#print(parse_txt("oteria.fr"))
+if __name__ == "__main__":
+    print(parse_txt("oteria.fr"))
+    print(parent_domain("sub.example.com"))
 
-#assert parent_domain("sub.example.co.uk") == "co.uk"  
-#assert parent_domain("example.com") == "example.com"

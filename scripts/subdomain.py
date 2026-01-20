@@ -35,5 +35,4 @@ def subdomain(domain, liste, threads=20):
 
 
 if __name__ == "__main__":
-    # -- test --
     print(subdomain("oteria.fr", liste, threads=20))

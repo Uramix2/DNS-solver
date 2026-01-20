@@ -29,6 +29,5 @@ def scan_srv(domain):
 
 
 if __name__ == "__main__":
-    # -- test --
     print(scan_srv("se.com"))
 

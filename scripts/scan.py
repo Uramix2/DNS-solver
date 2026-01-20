@@ -33,11 +33,19 @@ def scan_ns(domain):
 def scan_txt(domain):
     return resolver(domain,'TXT')
 
-def scan_srv(domain):
-    return resolver(domain,'SRV')
-
 def scan_ptr(domain):
     return resolver(domain,'PTR')
+
+
+if __name__ == "__main__":
+    
+    domain = "oteria.fr"
+    print("A:", scan_a(domain))
+    print("AAAA:", scan_aaaa(domain))
+    print("MX:", scan_mx(domain))
+    print("CNAME:", scan_cname(domain))
+    print("NS:", scan_ns(domain))
+    print("TXT:", scan_txt(domain))
 
 
 

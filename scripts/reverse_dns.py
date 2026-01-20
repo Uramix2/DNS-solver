@@ -17,7 +17,5 @@ def revserse_dns(ip_address):
         return f"Error DNS with {ip_address}"
 
 if __name__ == "__main__":
-    # -- test --
-    # assert revserse_dns("34.227.236.7") == "ec2-34-227-236-7.compute-1.amazonaws.com."
     print(revserse_dns("34.227.236.7"))
 
