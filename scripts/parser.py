@@ -9,7 +9,10 @@ def parse_args():
     parser.add_argument("-s", "--size", type=int, default=2, dest="ip_neighbors_size", help="IP neighbors range")
     parser.add_argument("-w", "--wordlist", default="wordlists/liste_subdomains.txt")
 
-    parser.add_argument("-t", "--txt", action="store_true", dest="TXT_parser", help="Parse TXT/SPF")
+    parser.add_argument("-v", "--verbose", action="store_true", help="Enable verbose output")
+    parser.add_argument("-t", "--threads", type=int, default=10, help="Number of threads (default: 10)")
+
+    parser.add_argument("-txt", action="store_true", dest="TXT_parser", help="Parse TXT/SPF")
     parser.add_argument("-r", "--rev", action="store_true", dest="reverse_DNS", help="Reverse DNS")
     parser.add_argument("-i", "--neighbors", action="store_true", dest="scan_IP_neighbors", help="IP Neighbors")
     parser.add_argument("-e", "--enum", action="store_true", dest="subdomain_enum", help="Subdomain enum")

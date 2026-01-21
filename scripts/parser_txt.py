@@ -53,7 +53,24 @@ def parent_domain(domain):
     return '.'.join(parts[-2:]) 
 
 
+
+def TLD(domain):
+    """
+    Permet de lister touts les TLD d'un domaine donné
+    """
+    domain_parts = domain.split('.')
+    tlds = []
+    for i in range(1, len(domain_parts) - 1):
+        tld = '.'.join(domain_parts[i:])
+        if parent_domain(tld) != tld:
+            tlds.append(tld)
+    return tlds
+    
+
+
+
 if __name__ == "__main__":
     print(parse_txt("oteria.fr"))
+    print(TLD("sirena.integration.dev.atlas.fabrique.social.gouv.fr"))
     print(parent_domain("sub.example.com"))
 

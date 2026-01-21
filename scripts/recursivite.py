@@ -1,17 +1,10 @@
 import ipaddress
-
-
 from .scan import *
 from .reverse_dns import revserse_dns
 from .subdomain import subdomain, liste as subdomain_liste
 from .scan_ip_neighbors import ip_neighbors
 from .parser_txt import parse_txt, parent_domain
 from .scan_srv import scan_srv 
-
-# paramètre pour limiter la taille du graphe
-MAX_VISITED = 1000
-MAX_TARGETS_PER_RECORD = 25
-
 
 def is_ip(value):
     try:
@@ -25,118 +18,96 @@ def is_ip(value):
 def clean(value):
     if not value: 
         return ""
-    return str(value).strip().rstrip('.').split()[-1] # enlver les espaces,pointspour avoir seulemnt le domaine/IP
+    return str(value).strip().rstrip('.').split()[-1]
 
 
 
 def scan_all(target, current_depth, visited, args, root_domain=None):
-    """
-    Fonction récursive pour scanner un domaine ou une IP et explorer les résultats.
-    Elle gère la profondeur maximale, évite les cycles et collecte les résultats. Pour les envoyer au graphe.
-    """
     if visited is None:
         visited = set()
     
-    target = clean(target) 
-    if not target or current_depth > args.max_depth: 
+    target = clean(target)
+    
+    # Condition d'arrêt
+    if not target or current_depth >= args.max_depth:
         return []
 
-
-    visit_id = f"{'IP' if is_ip(target) else 'DNS'}:{target}"
-    if visit_id in visited:
+    if target in visited:
         return []
     
-    visited.add(visit_id)
-    
+    visited.add(target)
     
     if root_domain is None:
         root_domain = parent_domain(target) if not is_ip(target) else target
 
     results = []
+    next_depth = current_depth + 1
 
+    # IP
     if is_ip(target):
-        #  SCAN VOISINS IP 
+        # Voisins IP
         if args.scan_IP_neighbors:
-            neighbors = ip_neighbors(target, size=args.ip_neighbors_size) 
+            neighbors = ip_neighbors(target, size=args.ip_neighbors_size)
             if neighbors:
-                valid_neighbors = [clean(n) for n in neighbors if "Error" not in n]
+                valid_nbors = [clean(n) for n in neighbors if "Error" not in str(n)]
+                if valid_nbors:
+                    results.append(("NEIGHBORS", target, valid_nbors))
+                    for n in valid_nbors:
+                        # La récursion s'arrêtera au début du prochain appel grâce au >=
+                        results.extend(scan_all(n, next_depth, visited, args, root_domain))
 
-                if valid_neighbors:
-                    results.append(("NEIGHBORS", target, valid_neighbors))
-
-                    # Récursion sur les voisins trouvés
-                    for n in valid_neighbors:
-                        results.extend(scan_all(n, current_depth + 1, visited, args, root_domain))
-
-        # REVERSE DNS 
-        rev = revserse_dns(target) 
-
+        # Reverse
+        rev = revserse_dns(target)
         if rev and "Error" not in str(rev):
-            rev = clean(rev)
-            results.append(("REVERSE", target, [rev]))
-            results.extend(scan_all(rev, current_depth + 1, visited, args, root_domain))
+            rev_c = clean(rev)
+            results.append(("REVERSE", target, [rev_c]))
+            results.extend(scan_all(rev_c, next_depth, visited, args, root_domain))
 
+    # DOMAINE
     else:
-        # DOMAINE (A, MX, NS, TXT,CNAME) 
-        for nom, func in [("A", scan_a), ("MX", scan_mx), ("NS", scan_ns), ("CNAME", scan_cname)]:
-            records = func(target) 
-
+        for nom, func in [("A", scan_a), ("MX", scan_mx), ("NS", scan_ns), ("CNAME", scan_cname), ("AAAA", scan_aaaa), ("PTR", scan_ptr)]:
+            records = func(target)
             if records:
                 valeurs = [clean(r) for r in records]
                 results.append((nom, target, valeurs))
-
+                
                 for v in valeurs:
                     v_clean = clean(v)
-                    # Si c'est un domaine externe (ex: google.com), on crée le lien parent
-                    p = parent_domain(v_clean)
-
-                    if p and p != root_domain and not is_ip(v_clean):
-                        results.append(("EXT_DOMAIN", v_clean, [p]))
                     
-                    results.extend(scan_all(v_clean, current_depth + 1, visited, args, root_domain))
+                    # Extension de domaine
+                    v_p = parent_domain(v_clean)
+                    if v_p and v_p != root_domain and not is_ip(v_clean):
+                        results.append(("EXT_DOMAIN", v_clean, [v_p]))
+                    
+                    results.extend(scan_all(v_clean, next_depth, visited, args, root_domain))
 
-        # SCAN TXT (IPs et Domaines)
+        # Scans (TXT, SRV, Subdomains)
         if args.TXT_parser:
-            txt_data = parse_txt(target) 
+            txt_data = parse_txt(target)
             if isinstance(txt_data, dict):
-                
-                # Domaines dans le TXT  
                 for d in txt_data.get("domains", []):
                     d_c = clean(d)
                     results.append(("TXT_DOM", target, [d_c]))
-                    p = parent_domain(d_c)
-
-                    if p and p != root_domain:
-                        results.append(("EXT_DOMAIN", d_c, [p]))
-                    results.extend(scan_all(d_c, current_depth + 1, visited, args, root_domain))
-
-                # IPs dans le TXT
-                for ip in txt_data.get("ipv4", []):
+                    results.extend(scan_all(d_c, next_depth, visited, args, root_domain))
+                for ip in txt_data.get("ipv4", []) + txt_data.get("ipv6", []):
                     results.append(("TXT_IP", target, [ip]))
-                    results.extend(scan_all(ip, current_depth + 1, visited, args, root_domain))
+                    results.extend(scan_all(ip, next_depth, visited, args, root_domain))
 
-        #SUBDOMAINS 
+        if args.scan_SRV:
+            srv_records = scan_srv(target) 
+            if srv_records:
+                srv_targets = [clean(s[0]) for s in srv_records]
+                results.append(("SRV", target, srv_targets))
+                for st in srv_targets:
+                    results.extend(scan_all(st, next_depth, visited, args, root_domain))
+
         if args.subdomain_enum and root_domain in target:
-            subs = subdomain(target, subdomain_liste) 
-
+            threads = getattr(args, 'threads', 20)
+            subs = subdomain(target, subdomain_liste, threads=threads)
             if subs:
-                results.append(("SUB_BRUTE", target, subs))
-
-                for s in subs:
-                    results.extend(scan_all(s, current_depth + 1, visited, args, root_domain))
+                clean_subs = [clean(s) for s in subs]
+                results.append(("SUB_BRUTE", target, clean_subs))
+                for s in clean_subs:
+                    results.extend(scan_all(s, next_depth, visited, args, root_domain))
 
     return results
-
-if __name__ == "__main__":
-   
-    args = lambda: None
-    args.max_depth = 2
-    args.scan_IP_neighbors = True
-    args.TXT_parser = True
-    args.subdomain_enum = True
-    args.scan_SRV = False
-
-    visited = set()
-    results = scan_all("oteria.fr", 0, visited, args)
-    for res in results:
-        print(res)

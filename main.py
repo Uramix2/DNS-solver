@@ -20,14 +20,20 @@ def main():
         args.scan_IP_neighbors = True
         args.subdomain_enum = True
 
-    print(f"[*] Scanning: {args.domain} (Depth: {args.max_depth})")
+    if args.verbose:
+        print(f"[*] Scanning: {args.domain} (Depth: {args.max_depth})")
+        print(f"[*] Threads: {args.threads}, IP neighbors size: {args.ip_neighbors_size}")
+    else:
+        print(f"[*] Scanning: {args.domain} (Depth: {args.max_depth})")
     
     visited = set()
     results = scan_all(args.domain, 0, visited, args, root_domain=None)  
      
     if results:
-        print(f"[*] Generating graph with {len(results)} relations...")
+        if args.verbose:
+            print(f"[*] Generating graph with {len(results)} relations...")
         generate_graph(results, f"graph_{args.domain.replace('.', '_')}")
+        print(f"[+] Graph saved: graph_{args.domain.replace('.', '_')}.svg")
     else:
         print("[!] No results to graph.")
 
