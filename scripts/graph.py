@@ -32,7 +32,7 @@ def generate_graph(results, filename="dns_map"):
             created_nodes.add(s_id)
 
         for target in targets:
-            # corriger le pb lié aux guillemets dans les ipv6
+
             t_label = str(target).strip().replace('"', '')
             t_id = t_label.replace(':', '_')
             

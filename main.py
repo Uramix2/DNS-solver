@@ -6,6 +6,23 @@ from scripts.rendu import generate_markdown
 def main():
     args = parse_args()
     
+    try:
+        if args.subdomain_enum or args.all:
+            with open(args.wordlist, "r") as f:
+                args.subdomain_list = [line.strip() for line in f]
+        
+        if args.scan_SRV or args.all:
+            with open(args.srv_wordlist, "r") as f:
+                args.srv_list = [line.strip() for line in f]
+
+        if getattr(args, 'mini_scan', False):
+            with open(args.bf_wordlist, "r") as f:
+                args.bf_list = [line.strip() for line in f]
+
+    except FileNotFoundError as e:
+        print(f"[!] Error loading wordlist: {e}")
+        return
+
     # Activation de toutes les options si --all est présent
     if args.all:
         args.TXT_parser = True
@@ -18,19 +35,18 @@ def main():
     
     visited = set()
     
-    # Lancement du scan
-    # Important : On peut aussi passer args.domain comme root_domain initial pour éviter le None
-    results = scan_all(args.domain, 0, visited, args, root_domain=args.domain)
+
+    results = scan_all(args.domain, 0, visited, args, root_domain=args.domain) # évite de scanner en dehors du domaine racine
 
     if results:
         print(f"\n[+] Discovery finished: {len(visited)} nodes found, {len(results)} relations identified.")
         
-        # 1. Génération du Graphe
+        #  Graphe
         output_name = f"graph_{args.domain.replace('.', '_')}"
         generate_graph(results, output_name)
         print(f"[+] Graph saved: {output_name}.svg")
         
-        # 2. Génération du Rapport HTML
+        #  Rapport 
         if getattr(args, 'report', False):
             report_file = generate_markdown(results, args.domain, visited)
             print(f"[+] Report generated: {report_file}")

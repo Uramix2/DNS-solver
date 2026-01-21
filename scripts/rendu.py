@@ -4,14 +4,14 @@ def generate_markdown(results, target_domain, visited_nodes):
     filename = f"report_{target_domain.replace('.', '_')}.html"
     heure_rapport = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     
-    # --- 1. Calcul des statistiques pour le Header ---
+    # statistiques
     stats = {}
     for rtype, source, values in results:
         if rtype not in stats:
             stats[rtype] = 0
         stats[rtype] += 1
     
-    # Génération HTML des petits badges de stats
+    # HTML des statistiques
     stats_html = ""
     for rtype in sorted(stats.keys()):
         stats_html += f"""
@@ -20,7 +20,7 @@ def generate_markdown(results, target_domain, visited_nodes):
                 <span class="stat-count">{stats[rtype]}</span>
             </div>"""
 
-    # --- 2. Construction du HTML ---
+    # HTML principal
     html_content = f"""
     <html>
     <head>
@@ -59,7 +59,7 @@ def generate_markdown(results, target_domain, visited_nodes):
                 {stats_html}
             </div>
     """
-
+    # resultats par catégorie
     categories = {}
     for rtype, source, values in results:
         if rtype not in categories:
@@ -69,7 +69,7 @@ def generate_markdown(results, target_domain, visited_nodes):
     for cat in categories:
         html_content += f"<h2>Section : {cat}</h2>"
         html_content += "<table><tr><th>Source</th><th>Résultats</th></tr>"
-        
+        # remplissage du tableau
         for src, vals in categories[cat]:
             if type(vals) == dict:
                 val_str = ""
@@ -85,7 +85,7 @@ def generate_markdown(results, target_domain, visited_nodes):
         
         html_content += "</table>"
 
-    
+    # footer
     html_content += f"""
             <div style="margin-top: 50px; text-align: center; color: #bdc3c7; font-size: 0.8em; border-top: 1px solid #eee; padding-top: 20px;">
                 Fin du rapport - DNS Tool  <a href="https://github.com/Uramix2/DNS-solver" style="color: #3498db; text-decoration: none; font-weight: bold;">GitHub Repository</a>
@@ -93,8 +93,7 @@ def generate_markdown(results, target_domain, visited_nodes):
         </div> </body>
     </html>
     """
-
-    # Écriture du fichier
+    
     with open(filename, "w", encoding="utf-8") as f:
         f.write(html_content)
     

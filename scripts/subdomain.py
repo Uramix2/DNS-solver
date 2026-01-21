@@ -1,14 +1,9 @@
 import dns.resolver
 from concurrent.futures import ThreadPoolExecutor
 
-with open("wordlists/liste_subdomains.txt", "r") as f:
-    liste = [line.strip() for line in f]
-
 def check_subdomain(full_domain):
     """Vérifie si un domaine complet existe."""
     resolver = dns.resolver.Resolver()
-    resolver.timeout = 2 
-    resolver.lifetime = 2
     
     try:
        
@@ -35,4 +30,4 @@ def subdomain(domain, liste, threads=20):
 
 
 if __name__ == "__main__":
-    print(subdomain("oteria.fr", liste, threads=20))
+    print(subdomain("oteria.fr", ["www", "grid", "ftp", "test", "dev", "api", "blog", "shop"],threads=10))

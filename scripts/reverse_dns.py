@@ -7,7 +7,6 @@ def revserse_dns(ip_address):
     Retourne le nom de domaine associé ou un message d'erreur.
     """
     try:
-        # string 
         ip_str = str(ip_address)
         reverse_name = reversename.from_address(ip_str)
         resolved_name = str(dns.resolver.resolve(reverse_name, "PTR")[0])
