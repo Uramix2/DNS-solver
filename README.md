@@ -23,7 +23,7 @@ Le projet a pour but d'automatiser la phase de reconnaissance passive et active 
 Pour utiliser toutes les fonctionnalités de scan et de rapport, seule l'installation des dépendances Python est nécessaire :
 
 ```bash
-git clone <url_du_repo>
+git clone https://github.com/Uramix2/DNS-solver
 cd projet_dns
 pip install -r requirements.txt
 ```
