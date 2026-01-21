@@ -1,6 +1,9 @@
 from graphviz import Digraph
 
 def generate_graph(results, filename="dns_map"):
+    """
+    génère un graphe SVG à partir des résultats de la découverte DNS.
+    """
     dot = Digraph(comment='DNS Recon Map', format='svg')
     dot.attr(rankdir='TB', nodesep='0.7', ranksep='1.2')
     

@@ -1,6 +1,9 @@
 from datetime import datetime
 
 def generate_markdown(results, target_domain, visited_nodes):
+    """
+    rendu html des résultats sous forme de rapport
+    """
     filename = f"report_{target_domain.replace('.', '_')}.html"
     heure_rapport = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
     

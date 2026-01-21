@@ -9,6 +9,9 @@ from .brute_force_script import dns_type
 from .blacklist import is_blacklisted
 
 def is_ip(value):
+    """
+    Vérifie si une valeur est une adresse IP valide.
+    """
     try:
         ipaddress.ip_address(str(value))
         return True
@@ -17,6 +20,9 @@ def is_ip(value):
 
 
 def clean(value):
+    """
+    Nettoie une valeur DNS en supprimant les points finaux et en extrayant le segment pertinent.
+    """
     if not value: 
         return ""
     # Nettoie les points finaux et récupère le dernier segment (utile pour DNS)
@@ -25,6 +31,10 @@ def clean(value):
 
 
 def scan_all(target, current_depth, visited, args, root_domain=None):
+    """
+    Fonction récursive pour scanner les enregistrements DNS et autres informations.
+    Utilise diverses techniques de scan en fonction des arguments fournis.
+    """
     small_subdomain = ["www", "mail", "remote", "blog", "webmail", "server", "ns1", "ns2", "smtp", "admin"]
     
     # conditions d'arrêt
@@ -140,7 +150,7 @@ def scan_all(target, current_depth, visited, args, root_domain=None):
             if subs:
                 c_subs = [clean(s) for s in subs]
                 results.append(("SUB_BRUTE", target, c_subs))
-                
+
                 for s in c_subs:
                     results.extend(scan_all(s, next_depth, visited, args, root_domain))
 
