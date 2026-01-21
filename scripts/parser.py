@@ -18,6 +18,7 @@ def parse_args():
     parser.add_argument("-e", "--enum", action="store_true", dest="subdomain_enum", help="Subdomain enum")
     parser.add_argument("-srv", "--srv", action="store_true", dest="scan_SRV", help="Scan SRV records")
     parser.add_argument("-a", "--all", action="store_true", help="Enable all scans")
+    parser.add_argument("-rep", "--report", action="store_true", help="Générer un rapport Markdown détaillé")
 
     args = parser.parse_args()
 

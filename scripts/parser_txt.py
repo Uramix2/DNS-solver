@@ -15,6 +15,7 @@ def parse_txt(domain):
     ipv6_regex = re.compile(r'(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}')
 
     found_info_dico = {
+        "raw": [],
         "domains": [],
         "emails": [],
         "ipv4": [],
@@ -25,6 +26,7 @@ def parse_txt(domain):
         response = resolver.resolve(domain, 'TXT')
         for record in response:
             str_e = str(record).replace('"', '')
+            found_info_dico["raw"].append(str_e)
 
             found_info_dico["domains"].extend(domain_regex.findall(str_e))
             found_info_dico["emails"].extend(email_regex.findall(str_e))
