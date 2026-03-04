@@ -25,6 +25,7 @@ Pour utiliser toutes les fonctionnalités de scan et de rapport, seule l'install
 ```bash
 git clone https://github.com/Uramix2/DNS-solver
 cd projet_dns
+sudo apt install graphviz
 pip install -r requirements.txt
 ```
 
